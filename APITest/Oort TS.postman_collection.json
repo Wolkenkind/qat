@@ -1,0 +1,1449 @@
+{
+	"info": {
+		"_postman_id": "2d03dbad-afb2-4640-94a8-fd244ae504df",
+		"name": "Oort TS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17079624",
+		"_collection_link": "https://www.postman.com/wolkenkind/workspace/oort/collection/17079624-2d03dbad-afb2-4640-94a8-fd244ae504df?action=share&source=collection_link&creator=17079624"
+	},
+	"item": [
+		{
+			"name": "TC-001-all",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"ships_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/starships",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"starships"
+					]
+				},
+				"description": "```\nПроверка корректности передачи информации о звездолетах из источника данных\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-001-rate_limiting",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// track requests\r",
+							"let count = parseInt(pm.collectionVariables.get(\"requestCount\")) || 0;\r",
+							"count = count + 1;\r",
+							"pm.collectionVariables.set(\"requestCount\", count);\r",
+							"\r",
+							"if (count > 20) {\r",
+							"    // Check for 429 status\r",
+							"    pm.test(\"Rate limit enforced\", function () {\r",
+							"        pm.response.to.have.status(429);\r",
+							"    });\r",
+							"} else {\r",
+							"    pm.test(\"Rate limit not enforced\", function () {\r",
+							"        pm.response.to.have.status(200);\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// Log rate limit info (if headers exist)\r",
+							"const limit = pm.response.headers.get(\"X-RateLimit-Limit\");\r",
+							"if (limit) {\r",
+							"    console.log(`Rate limit: ${limit} requests`);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/starships",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"starships"
+					]
+				},
+				"description": "```\nПроверка rate limiting\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-001-response_time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3 s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/starships",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"starships"
+					]
+				},
+				"description": "```\nПроверка максимального времени ответа на запрос\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-001-available",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"ships_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/starships/status/available",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"starships",
+						"status",
+						"available"
+					]
+				},
+				"description": "```\nПроверка корректности передачи информации о доступных звездолетах из источника данных\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-001-starship_present",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"ship_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/starships/{{ship_id}}",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"starships",
+						"{{ship_id}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка корректности передачи информации о конкретном звездолете по идентификатору из источника данных\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-001-starship_val_error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"val_error_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/starships/5g",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"starships",
+						"5g"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка ошибки валидации при передаче информации о конкретном звездолете по идентификатору из источника данных\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-inventory",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"inventory_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/inventory",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"inventory"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка корректности передачи информации о грузах на складе\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-inventory_response_time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3 s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/inventory",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"inventory"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка максимального времени ответа на запрос\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-inventory_pagination",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"inventory_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/inventory?skip=4&limit=8",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"inventory"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": "4"
+						},
+						{
+							"key": "limit",
+							"value": "8"
+						}
+					]
+				},
+				"description": "```\nПроверка корректности пагинации при передачи информации о грузах на складе\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-cargo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"cargo_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/cargo",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"cargo"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка корректности передачи информации о грузах\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-cargo_response_time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3 s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/cargo",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"cargo"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка максимального времени ответа на запрос\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-cargo_pagination",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"cargo_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/cargo?skip=7&limit=2",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"cargo"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": "7"
+						},
+						{
+							"key": "limit",
+							"value": "2"
+						}
+					]
+				},
+				"description": "```\nПроверка корректности пагинации при передачи информации о грузах\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-load",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"shipment_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"starship_id\": 82,\r\n    \"cargo_id\": 21,\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/load",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"load"
+					]
+				},
+				"description": "```\nПроверка создания новой погрузки\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-load_response_time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3 s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"starship_id\": 82,\r\n    \"cargo_id\": 21,\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/load",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"load"
+					]
+				},
+				"description": "```\nПроверка максимального времени ответа на запрос\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-load_error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"load_error_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"starship_id\": 82,\r\n    \"cargo_id\": 21,\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/load",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"load"
+					]
+				},
+				"description": "```\nПроверка ошибки 400 при создании новой погрузки\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-load_not_found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"load_error_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"starship_id\": 0,\r\n    \"cargo_id\": 21,\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/load",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"load"
+					]
+				},
+				"description": "```\nПроверка ошибки 404 при создании новой погрузки\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-load_val_error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"val_error_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"starship_id\": 82,\r\n    \"cargo_id\": 21,\r\n    \"quantity\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/load",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"load"
+					]
+				},
+				"description": "```\nПроверка ошибки валидации при создании новой погрузки\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-shipment_change_status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"shipment_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\"loading\"",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/shipments/{{shipment_id}}/status",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"shipments",
+						"{{shipment_id}}",
+						"status"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка изменения статуса погрузки\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-003-shipment_change_status_val_error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"val_error_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\"loading\"",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/shipments/{{invalid_shipment_id}}/status",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"shipments",
+						"{{invalid_shipment_id}}",
+						"status"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка ошибки валидации при изменении статуса погрузки\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-005-history",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"history_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/history",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"history"
+					],
+					"query": [
+						{
+							"key": "starship_id",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "cargo_id",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "status",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "from_date",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "to_date",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка корректности передачи информации об истории операций\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-005-history_response_time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3 s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/history",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"history"
+					],
+					"query": [
+						{
+							"key": "starship_id",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "cargo_id",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "status",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "from_date",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "to_date",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка макисмального времени ответа на запрос\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "TC-005-history_val_error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code is correct\", function() {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							"// Import Ajv\r",
+							"const Ajv = require('ajv');\r",
+							"\r",
+							"// Create an Ajv instance with desired options (e.g., to log errors)\r",
+							"const ajv = new Ajv({ logger: console, allErrors: true });\r",
+							"\r",
+							"// Define your JSON schema\r",
+							"const schema = JSON.parse(pm.collectionVariables.get(\"val_error_schema\"));\r",
+							"\r",
+							"// Get the response body as a JSON object\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response schema is correct\", function() {\r",
+							"    // Perform the schema validation\r",
+							"    const valid = ajv.validate(schema, responseData);\r",
+							"    if (!valid) {\r",
+							"        console.log(\"Schema validation errors:\", ajv.errors);\r",
+							"    }\r",
+							"    pm.expect(valid).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}api/history?status=wrong",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"history"
+					],
+					"query": [
+						{
+							"key": "starship_id",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "cargo_id",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "status",
+							"value": "wrong"
+						},
+						{
+							"key": "from_date",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "to_date",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "```\nПроверка ошибки валидации при передаче информации об истории операций\n\n ```"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "test",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://qasandbox-production.up.railway.app/",
+			"type": "string"
+		},
+		{
+			"key": "ships_schema",
+			"value": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[\"name\",\"capacity\",\"range\",\"id\"],\"properties\":{\"name\":{\"type\":\"string\",\"minLength\":2,\"maxLength\":100},\"capacity\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000000},\"volume\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000000},\"range\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":10000000},\"status\":{\"type\":\"string\",\"enum\":[\"available\",\"maintenance\",\"in_flight\",\"loading\"]},\"id\":{\"type\":\"integer\",\"minimum\":1}}}}",
+			"type": "string"
+		},
+		{
+			"key": "ship_schema",
+			"value": "{\"type\":\"object\",\"required\":[\"name\",\"capacity\",\"range\",\"id\"],\"properties\":{\"name\":{\"type\":\"string\",\"minLength\":2,\"maxLength\":100},\"capacity\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000000},\"volume\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000000},\"range\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":10000000},\"status\":{\"type\":\"string\",\"enum\":[\"available\",\"maintenance\",\"in_flight\",\"loading\"]},\"id\":{\"type\":\"integer\",\"minimum\":1}}}",
+			"type": "string"
+		},
+		{
+			"key": "val_error_schema",
+			"value": "{\"type\":\"object\",\"properties\":{\"detail\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"loc\":{\"type\":\"array\",\"items\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"integer\"}]}},\"msg\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"}},\"required\":[\"loc\",\"msg\",\"type\"],\"additionalProperties\":false}}},\"required\":[\"detail\"],\"additionalProperties\":false}",
+			"type": "string"
+		},
+		{
+			"key": "ship_id",
+			"value": "3",
+			"type": "string"
+		},
+		{
+			"key": "requestCount",
+			"value": ""
+		},
+		{
+			"key": "inventory_schema",
+			"value": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[\"name\",\"quantity\",\"weight\",\"volume\",\"id\"],\"properties\":{\"name\":{\"type\":\"string\",\"minLength\":2,\"maxLength\":100},\"quantity\":{\"type\":\"integer\",\"minimum\":0,\"maximum\":1000000},\"weight\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000},\"volume\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000},\"id\":{\"type\":\"integer\",\"minimum\":1}}}}",
+			"type": "string"
+		},
+		{
+			"key": "cargo_schema",
+			"value": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[\"name\",\"quantity\",\"weight\",\"volume\",\"id\"],\"properties\":{\"name\":{\"type\":\"string\",\"minLength\":2,\"maxLength\":100},\"quantity\":{\"type\":\"integer\",\"minimum\":0,\"maximum\":1000000},\"weight\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000},\"volume\":{\"type\":\"number\",\"exclusiveMinimum\":0,\"maximum\":1000},\"id\":{\"type\":\"integer\",\"minimum\":1}}}}",
+			"type": "string"
+		},
+		{
+			"key": "shipment_schema",
+			"value": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\"},\"starship_id\":{\"type\":\"integer\"},\"starship_name\":{\"type\":\"string\"},\"cargo_id\":{\"type\":\"integer\"},\"cargo_name\":{\"type\":\"string\"},\"quantity\":{\"type\":\"integer\",\"minimum\":1},\"status\":{\"type\":\"string\",\"enum\":[\"loading\",\"completed\",\"cancelled\"]},\"created_at\":{\"type\":\"string\",\"format\":\"date-time\"}},\"required\":[\"id\",\"starship_id\",\"starship_name\",\"cargo_id\",\"cargo_name\",\"quantity\",\"status\",\"created_at\"],\"additionalProperties\":false}",
+			"type": "string"
+		},
+		{
+			"key": "load_error_schema",
+			"value": "{\"type\":\"object\",\"properties\":{\"detail\":{\"type\":\"string\"}}}",
+			"type": "string"
+		},
+		{
+			"key": "history_schema",
+			"value": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"minimum\":1},\"starship\":{\"type\":\"string\",\"minLength\":1},\"cargo\":{\"type\":\"string\",\"minLength\":1},\"quantity\":{\"type\":\"integer\",\"minimum\":1},\"status\":{\"type\":\"string\",\"enum\":[\"Loading\",\"Completed\",\"Cancelled\"]},\"created_at\":{\"type\":\"string\",\"pattern\":\"^\\\\d{4}-\\\\d{2}-\\\\d{2} \\\\d{2}:\\\\d{2}:\\\\d{2}$\"}},\"required\":[\"id\",\"starship\",\"cargo\",\"quantity\",\"status\",\"created_at\"],\"additionalProperties\":false}}",
+			"type": "string"
+		},
+		{
+			"key": "shipment_id",
+			"value": "20",
+			"type": "string"
+		},
+		{
+			"key": "invalid_shipment_id",
+			"value": "5g",
+			"type": "string"
+		},
+		{
+			"key": "sql_ship_id",
+			"value": "' or '1'='1",
+			"type": "string"
+		}
+	]
+}

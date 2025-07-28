@@ -54,7 +54,7 @@
 \
 Решение:
 
-[Spreadsheet](./pw.png)
+[Spreadsheet](pw.png)
 
 ---
 
@@ -129,7 +129,7 @@
 
 Берем котика за объект, получаем следующую диаграмму:
 
-[State-Transition](./st.png)
+[State-Transition](st.png)
 
 Создаем следующие тест-кейсы:
 
